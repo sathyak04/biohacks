@@ -1,0 +1,15 @@
+{
+  "name": "mutationmap-backend",
+  "version": "1.0.0",
+  "description": "MutationMap API — Cancer Driver Mutation Explorer",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "fastify": "^5.2.0",
+    "@fastify/cors": "^10.0.0",
+    "@fastify/static": "^8.0.0"
+  }
+}

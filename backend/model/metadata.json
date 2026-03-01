@@ -1,0 +1,141 @@
+{
+  "features": [
+    "TP53_R175H",
+    "TP53_R248W",
+    "TP53_R248Q",
+    "TP53_R273H",
+    "TP53_R273C",
+    "TP53_G245S",
+    "TP53_R249S",
+    "TP53_Y220C",
+    "TP53_C176F",
+    "TP53_R282W",
+    "TP53_V157F",
+    "TP53_R158L",
+    "TP53_H179R",
+    "BRCA1_185delAG",
+    "BRCA1_5382insC",
+    "BRCA1_C68G",
+    "BRCA1_M1775R",
+    "BRCA1_A1685T",
+    "BRCA1_C61G",
+    "BRCA1_Q1613X",
+    "BRCA1_E871X",
+    "BRCA2_6174delT",
+    "BRCA2_999del5",
+    "BRCA2_T2336I",
+    "BRCA2_D3036E",
+    "BRCA2_D2723H",
+    "BRCA2_E1420Q",
+    "BRCA2_E886del"
+  ],
+  "cancer_types": [
+    "bladder",
+    "brain",
+    "breast",
+    "colorectal",
+    "esophageal",
+    "liver",
+    "lung",
+    "ovarian",
+    "pancreatic",
+    "prostate",
+    "skin"
+  ],
+  "accuracy": 0.635,
+  "classification_report": {
+    "bladder": {
+      "precision": 0.6285714285714286,
+      "recall": 0.5641025641025641,
+      "f1-score": 0.5945945945945946,
+      "support": 39.0
+    },
+    "brain": {
+      "precision": 0.6857142857142857,
+      "recall": 0.7272727272727273,
+      "f1-score": 0.7058823529411765,
+      "support": 33.0
+    },
+    "breast": {
+      "precision": 0.9117647058823529,
+      "recall": 0.9117647058823529,
+      "f1-score": 0.9117647058823529,
+      "support": 34.0
+    },
+    "colorectal": {
+      "precision": 0.696969696969697,
+      "recall": 0.6388888888888888,
+      "f1-score": 0.6666666666666666,
+      "support": 36.0
+    },
+    "esophageal": {
+      "precision": 0.41025641025641024,
+      "recall": 0.43243243243243246,
+      "f1-score": 0.42105263157894735,
+      "support": 37.0
+    },
+    "liver": {
+      "precision": 0.4827586206896552,
+      "recall": 0.4117647058823529,
+      "f1-score": 0.4444444444444444,
+      "support": 34.0
+    },
+    "lung": {
+      "precision": 0.525,
+      "recall": 0.5833333333333334,
+      "f1-score": 0.5526315789473685,
+      "support": 36.0
+    },
+    "ovarian": {
+      "precision": 0.9696969696969697,
+      "recall": 0.8648648648648649,
+      "f1-score": 0.9142857142857143,
+      "support": 37.0
+    },
+    "pancreatic": {
+      "precision": 0.6170212765957447,
+      "recall": 0.7435897435897436,
+      "f1-score": 0.6744186046511628,
+      "support": 39.0
+    },
+    "prostate": {
+      "precision": 0.6428571428571429,
+      "recall": 0.675,
+      "f1-score": 0.6585365853658537,
+      "support": 40.0
+    },
+    "skin": {
+      "precision": 0.45454545454545453,
+      "recall": 0.42857142857142855,
+      "f1-score": 0.4411764705882353,
+      "support": 35.0
+    },
+    "accuracy": 0.635,
+    "macro avg": {
+      "precision": 0.6386505447071947,
+      "recall": 0.6346895813473353,
+      "f1-score": 0.6350413045405925,
+      "support": 400.0
+    },
+    "weighted avg": {
+      "precision": 0.6382326020152507,
+      "recall": 0.635,
+      "f1-score": 0.6349540976326865,
+      "support": 400.0
+    }
+  },
+  "top_features": {
+    "TP53_R273H": 0.0888,
+    "TP53_R175H": 0.0841,
+    "TP53_R248W": 0.0769,
+    "BRCA2_6174delT": 0.0736,
+    "TP53_R248Q": 0.0654,
+    "TP53_R273C": 0.0554,
+    "BRCA1_185delAG": 0.0513,
+    "TP53_R249S": 0.0492,
+    "TP53_V157F": 0.0453,
+    "BRCA1_5382insC": 0.0416
+  },
+  "training_samples": 1600,
+  "test_samples": 400
+}
