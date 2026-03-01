@@ -1,3 +1,4 @@
+require("dotenv").config();
 const path = require("path");
 const fastify = require("fastify")({ logger: true });
 
@@ -9,6 +10,7 @@ fastify.register(require("@fastify/static"), {
 });
 fastify.register(require("./routes/mutations"), { prefix: "/api" });
 fastify.register(require("./routes/predict"), { prefix: "/api" });
+fastify.register(require("./routes/chat"), { prefix: "/api" });
 
 fastify.get("/api/health", async () => ({ status: "ok" }));
 

@@ -7,6 +7,9 @@ const GENE_COLORS = {
   TP53: "#f87171",
   BRCA1: "#a78bfa",
   BRCA2: "#38bdf8",
+  KRAS: "#f59e0b",
+  BRAF: "#22c55e",
+  PIK3CA: "#ec4899",
 };
 
 // Fixed helix parameters so all genes look the same
@@ -46,13 +49,20 @@ function buildHelixData(geneData, geneName) {
     rungs.push({ start: strand1[i].clone(), end: strand2[i].clone(), idx: i });
   }
 
-  // Map mutations to positions on the helix
+  // Map mutations to positions on the helix, offsetting duplicates
   const totalLength = geneData.length;
+  const positionCounts = {};
   const mutationMarkers = geneData.mutations.map((mut) => {
+    // Track how many mutations share this position and offset them
+    const posKey = mut.pos;
+    positionCounts[posKey] = (positionCounts[posKey] || 0);
+    const dupIndex = positionCounts[posKey];
+    positionCounts[posKey]++;
+
     const t = mut.pos / totalLength;
     const idx = Math.floor(t * TOTAL_POINTS);
     const angle = (idx / TOTAL_POINTS) * HELIX_TURNS * Math.PI * 2;
-    const y = (idx / TOTAL_POINTS - 0.5) * HELIX_HEIGHT;
+    const y = (idx / TOTAL_POINTS - 0.5) * HELIX_HEIGHT + dupIndex * 0.6;
 
     return {
       position: new THREE.Vector3(
@@ -70,10 +80,9 @@ function buildHelixData(geneData, geneName) {
     };
   });
 
-  // Calculate scroll bounds from actual mutation positions
-  const ys = mutationMarkers.map((m) => m.position.y);
-  const minY = ys.length > 0 ? Math.min(...ys) : -HELIX_HEIGHT / 2;
-  const maxY = ys.length > 0 ? Math.max(...ys) : HELIX_HEIGHT / 2;
+  // Scroll bounds = full helix extent so you can't scroll off
+  const minY = -HELIX_HEIGHT / 2;
+  const maxY = HELIX_HEIGHT / 2;
 
   return { strand1, strand2, rungs, mutationMarkers, minY, maxY };
 }
@@ -94,27 +103,30 @@ function CameraController({ targetY }) {
   useFrame(() => {
     currentY.current += (targetY - currentY.current) * 0.08;
     camera.position.y = currentY.current;
-    camera.lookAt(0, currentY.current, 0);
+    camera.position.x = 1.5;
+    camera.lookAt(1.5, currentY.current, 0);
   });
 
   return null;
 }
 
-function HelixModel({ geneData, geneName, activeMutations, selectedMutation, onSelectMutation }) {
+function HelixModel({ geneData, geneName, activeMutations, selectedMutation, onSelectMutation, dragRotation }) {
   const groupRef = useRef();
   const color = GENE_COLORS[geneName] || "#94a3b8";
   const rungColor = darkenColor(GENE_COLORS[geneName] || "#94a3b8", 0.65);
   const [hovered, setHovered] = useState(null);
+  const autoRotation = useRef(0);
 
   const { strand1, strand2, rungs, mutationMarkers } = useMemo(
     () => buildHelixData(geneData, geneName),
     [geneData, geneName]
   );
 
-  // Slow auto-rotation
+  // Slow auto-rotation + drag rotation
   useFrame((state, delta) => {
     if (groupRef.current) {
-      groupRef.current.rotation.y += delta * 0.15;
+      autoRotation.current += delta * 0.15;
+      groupRef.current.rotation.y = autoRotation.current + (dragRotation?.current || 0);
     }
   });
 
@@ -237,9 +249,12 @@ function HelixModel({ geneData, geneName, activeMutations, selectedMutation, onS
   );
 }
 
-export default function DNAHelix({ geneData, geneName, activeMutations, selectedMutation, onSelectMutation }) {
+export default function DNAHelix({ geneData, geneName, activeMutations, selectedMutation, onSelectMutation, mutationDetail }) {
   const [scrollY, setScrollY] = useState(0);
   const containerRef = useRef(null);
+  const dragRotation = useRef(0);
+  const isDragging = useRef(false);
+  const lastMouseX = useRef(0);
 
   const helixData = useMemo(
     () => buildHelixData(geneData, geneName),
@@ -268,22 +283,48 @@ export default function DNAHelix({ geneData, geneName, activeMutations, selected
     return Math.max(min, Math.min(max, val));
   };
 
-  // Handle mouse wheel for vertical scrolling
-  const handleWheel = (e) => {
-    e.preventDefault();
-    setScrollY((prev) => clampScroll(prev - e.deltaY * 0.01));
+  // Attach wheel listener with { passive: false } so preventDefault works
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const handleWheel = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setScrollY((prev) => clampScroll(prev - e.deltaY * 0.01));
+    };
+    el.addEventListener("wheel", handleWheel, { passive: false });
+    return () => el.removeEventListener("wheel", handleWheel);
+  });
+
+  // Horizontal drag to spin the helix
+  const handleMouseDown = (e) => {
+    isDragging.current = true;
+    lastMouseX.current = e.clientX;
+  };
+  const handleMouseMove = (e) => {
+    if (!isDragging.current) return;
+    const delta = e.clientX - lastMouseX.current;
+    dragRotation.current += delta * 0.01;
+    lastMouseX.current = e.clientX;
+  };
+  const handleMouseUp = () => {
+    isDragging.current = false;
   };
 
   return (
     <div
       ref={containerRef}
-      onWheel={handleWheel}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
       style={{
-        borderRadius: "16px", overflow: "hidden", border: "1px solid #1e293b",
-        background: "#050a18", minHeight: "500px", position: "relative",
+        cursor: "grab",
+        borderRadius: "12px", overflow: "hidden", border: "1px solid #1e293b",
+        background: "#050a18", height: "100%", position: "relative",
       }}
     >
-      <Canvas camera={{ position: [0, 0, 12], fov: 50 }} style={{ background: "#050a18" }}>
+      <Canvas camera={{ position: [1.5, 0, 12], fov: 50 }} style={{ background: "#050a18" }}>
         <ambientLight intensity={0.3} />
         <pointLight position={[10, 10, 10]} intensity={0.8} color="#ffffff" />
         <pointLight position={[-10, -5, 5]} intensity={0.4} color="#8b5cf6" />
@@ -297,6 +338,7 @@ export default function DNAHelix({ geneData, geneName, activeMutations, selected
           activeMutations={activeMutations}
           selectedMutation={selectedMutation}
           onSelectMutation={onSelectMutation}
+          dragRotation={dragRotation}
         />
       </Canvas>
 
@@ -333,12 +375,49 @@ export default function DNAHelix({ geneData, geneName, activeMutations, selected
         ))}
       </div>
 
+      {/* Mutation detail overlay — right side of the helix */}
+      {mutationDetail && mutationDetail.mutation && (
+        <div style={{
+          position: "absolute", top: "12px", right: "12px", width: "220px",
+          marginTop: "60px",
+          background: "rgba(5,10,24,0.9)", borderRadius: "10px", padding: "12px",
+          border: "1px solid #1e293b", backdropFilter: "blur(8px)",
+        }}>
+          <div style={{ fontSize: "14px", fontWeight: "700", color: "#f0abfc", marginBottom: "2px" }}>
+            {mutationDetail.gene} {mutationDetail.mutation.id}
+          </div>
+          <div style={{ fontSize: "10px", color: "#64748b", marginBottom: "8px" }}>
+            Position {mutationDetail.mutation.pos} | {mutationDetail.mutation.ref} → {mutationDetail.mutation.alt}
+          </div>
+          <div style={{ fontSize: "11px", color: "#94a3b8", lineHeight: "1.5", marginBottom: "8px" }}>
+            {mutationDetail.mutation.desc}
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "3px", marginBottom: "6px" }}>
+            {mutationDetail.mutation.driver && (
+              <span style={{
+                padding: "2px 6px", borderRadius: "3px", fontSize: "9px", fontWeight: "600",
+                background: "rgba(239,68,68,0.15)", color: "#f87171",
+              }}>Driver Mutation</span>
+            )}
+            {mutationDetail.mutation.cancers.map((c) => (
+              <span key={c} style={{
+                padding: "2px 6px", borderRadius: "3px", fontSize: "9px", fontWeight: "600",
+                background: "rgba(139,92,246,0.15)", color: "#a78bfa",
+              }}>{c}</span>
+            ))}
+          </div>
+          <div style={{ fontSize: "9px", color: "#475569" }}>
+            Frequency: {(mutationDetail.mutation.freq * 100).toFixed(1)}% of {mutationDetail.gene} mutations
+          </div>
+        </div>
+      )}
+
       {/* Instructions */}
       <div style={{
         position: "absolute", bottom: "12px", right: "12px", pointerEvents: "none",
         fontSize: "10px", color: "#334155",
       }}>
-        Scroll to navigate | Click mutations to inspect
+        Drag to spin | Scroll to navigate | Click mutations to inspect
       </div>
     </div>
   );

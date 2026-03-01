@@ -1,7 +1,7 @@
 """
 Generate a curated cancer mutation dataset based on real COSMIC mutation patterns.
 
-Genes: TP53, BRCA1, BRCA2
+Genes: TP53, BRCA1, BRCA2, KRAS, BRAF, PIK3CA
 Each mutation has: gene, position, ref_aa, alt_aa, mutation_id, cancer_types, frequency, is_driver
 
 Also generates a training dataset for the cancer-type classifier:
@@ -54,7 +54,7 @@ TP53_MUTATIONS = [
 BRCA1_MUTATIONS = [
     {"pos": 185, "ref": "C", "alt": "AG", "id": "185delAG", "cancers": ["breast", "ovarian"], "freq": 0.08, "driver": True,
      "desc": "Ashkenazi Jewish founder mutation. Frameshift causing truncation. High penetrance."},
-    {"pos": 5382, "ref": "C", "alt": "-", "id": "5382insC", "cancers": ["breast", "ovarian"], "freq": 0.05, "driver": True,
+    {"pos": 1794, "ref": "C", "alt": "-", "id": "5382insC", "cancers": ["breast", "ovarian"], "freq": 0.05, "driver": True,
      "desc": "Ashkenazi/Eastern European founder mutation. Frameshift at BRCT domain."},
     {"pos": 68, "ref": "C", "alt": "G", "id": "C68G", "cancers": ["breast", "ovarian"], "freq": 0.02, "driver": True,
      "desc": "RING domain mutation. Disrupts BRCA1-BARD1 interaction critical for DNA repair."},
@@ -75,7 +75,7 @@ BRCA1_MUTATIONS = [
 ]
 
 BRCA2_MUTATIONS = [
-    {"pos": 6174, "ref": "T", "alt": "-", "id": "6174delT", "cancers": ["breast", "ovarian", "prostate", "pancreatic"], "freq": 0.06, "driver": True,
+    {"pos": 2058, "ref": "T", "alt": "-", "id": "6174delT", "cancers": ["breast", "ovarian", "prostate", "pancreatic"], "freq": 0.06, "driver": True,
      "desc": "Ashkenazi Jewish founder mutation. Frameshift causing truncated protein."},
     {"pos": 999, "ref": "S", "alt": "-", "id": "999del5", "cancers": ["breast", "ovarian"], "freq": 0.03, "driver": True,
      "desc": "Icelandic founder mutation. Five-nucleotide deletion in exon 9."},
@@ -95,6 +95,71 @@ BRCA2_MUTATIONS = [
      "desc": "Likely benign. Located near C-terminal domain."},
 ]
 
+KRAS_MUTATIONS = [
+    {"pos": 12, "ref": "G", "alt": "D", "id": "G12D", "cancers": ["pancreatic", "colorectal", "lung"], "freq": 0.12, "driver": True,
+     "desc": "Most common KRAS mutation. Locks GTPase in active state. Major drug target."},
+    {"pos": 12, "ref": "G", "alt": "V", "id": "G12V", "cancers": ["pancreatic", "lung"], "freq": 0.08, "driver": True,
+     "desc": "Second most common at codon 12. Constitutive RAS signaling activation."},
+    {"pos": 12, "ref": "G", "alt": "C", "id": "G12C", "cancers": ["lung"], "freq": 0.07, "driver": True,
+     "desc": "Smoking-associated mutation. Target of sotorasib — first approved KRAS inhibitor."},
+    {"pos": 12, "ref": "G", "alt": "A", "id": "G12A", "cancers": ["pancreatic", "colorectal"], "freq": 0.03, "driver": True,
+     "desc": "Less common codon 12 variant. Similar oncogenic mechanism to G12D."},
+    {"pos": 12, "ref": "G", "alt": "R", "id": "G12R", "cancers": ["pancreatic"], "freq": 0.02, "driver": True,
+     "desc": "Enriched in pancreatic ductal adenocarcinoma. Distinct signaling profile."},
+    {"pos": 13, "ref": "G", "alt": "D", "id": "G13D", "cancers": ["colorectal", "lung"], "freq": 0.05, "driver": True,
+     "desc": "Codon 13 hotspot. May respond to anti-EGFR therapy unlike codon 12 mutations."},
+    {"pos": 61, "ref": "Q", "alt": "H", "id": "Q61H", "cancers": ["lung", "pancreatic"], "freq": 0.03, "driver": True,
+     "desc": "Codon 61 mutation. Impairs GTPase activity. Found in lung adenocarcinoma."},
+    {"pos": 61, "ref": "Q", "alt": "L", "id": "Q61L", "cancers": ["lung", "skin"], "freq": 0.02, "driver": True,
+     "desc": "Activating mutation at switch II region. Rare but clinically significant."},
+    {"pos": 146, "ref": "A", "alt": "T", "id": "A146T", "cancers": ["colorectal"], "freq": 0.02, "driver": True,
+     "desc": "Non-hotspot activating mutation. Enriched in colorectal cancer."},
+    {"pos": 117, "ref": "K", "alt": "N", "id": "K117N", "cancers": ["colorectal"], "freq": 0.005, "driver": False,
+     "desc": "Rare variant. Uncertain oncogenic significance."},
+]
+
+BRAF_MUTATIONS = [
+    {"pos": 600, "ref": "V", "alt": "E", "id": "V600E", "cancers": ["skin", "colorectal", "lung", "brain"], "freq": 0.15, "driver": True,
+     "desc": "Most common BRAF mutation (~90%). Constitutive kinase activation. Target of vemurafenib."},
+    {"pos": 600, "ref": "V", "alt": "K", "id": "V600K", "cancers": ["skin"], "freq": 0.03, "driver": True,
+     "desc": "Second most common V600 variant. Responds to BRAF inhibitor combinations."},
+    {"pos": 601, "ref": "K", "alt": "E", "id": "K601E", "cancers": ["skin", "ovarian"], "freq": 0.02, "driver": True,
+     "desc": "Non-V600 activating mutation. Intermediate kinase activity."},
+    {"pos": 597, "ref": "L", "alt": "V", "id": "L597V", "cancers": ["skin", "lung"], "freq": 0.01, "driver": True,
+     "desc": "Rare activating mutation in kinase domain. Variable drug sensitivity."},
+    {"pos": 469, "ref": "G", "alt": "A", "id": "G469A", "cancers": ["lung", "colorectal", "skin"], "freq": 0.02, "driver": True,
+     "desc": "P-loop mutation. Moderate kinase activation. Found in lung adenocarcinoma."},
+    {"pos": 466, "ref": "G", "alt": "V", "id": "G466V", "cancers": ["lung", "colorectal"], "freq": 0.01, "driver": True,
+     "desc": "Impaired kinase — signals through CRAF. Paradox activator of MAPK pathway."},
+    {"pos": 594, "ref": "D", "alt": "G", "id": "D594G", "cancers": ["lung", "colorectal"], "freq": 0.01, "driver": True,
+     "desc": "Kinase-dead mutation. Activates MAPK through CRAF dimerization."},
+    {"pos": 464, "ref": "G", "alt": "E", "id": "G464E", "cancers": ["colorectal"], "freq": 0.005, "driver": False,
+     "desc": "Variant of uncertain significance in P-loop region."},
+]
+
+PIK3CA_MUTATIONS = [
+    {"pos": 1047, "ref": "H", "alt": "R", "id": "H1047R", "cancers": ["breast", "colorectal", "lung", "brain"], "freq": 0.10, "driver": True,
+     "desc": "Most common PIK3CA hotspot. Kinase domain mutation. Constitutive PI3K activation."},
+    {"pos": 545, "ref": "E", "alt": "K", "id": "E545K", "cancers": ["breast", "colorectal", "bladder"], "freq": 0.08, "driver": True,
+     "desc": "Helical domain hotspot. Disrupts inhibitory contact with p85 regulatory subunit."},
+    {"pos": 542, "ref": "E", "alt": "K", "id": "E542K", "cancers": ["breast", "colorectal", "bladder"], "freq": 0.06, "driver": True,
+     "desc": "Helical domain mutation. Constitutive lipid kinase activity. Common in breast cancer."},
+    {"pos": 1047, "ref": "H", "alt": "L", "id": "H1047L", "cancers": ["breast", "lung"], "freq": 0.02, "driver": True,
+     "desc": "Alternative kinase domain hotspot. Similar activation mechanism to H1047R."},
+    {"pos": 345, "ref": "N", "alt": "K", "id": "N345K", "cancers": ["breast", "liver"], "freq": 0.01, "driver": True,
+     "desc": "C2 domain mutation. Alters membrane binding. Emerging therapeutic target."},
+    {"pos": 420, "ref": "C", "alt": "R", "id": "C420R", "cancers": ["breast", "brain"], "freq": 0.01, "driver": True,
+     "desc": "C2 domain mutation. Enhances membrane recruitment and PI3K signaling."},
+    {"pos": 546, "ref": "E", "alt": "K", "id": "E546K", "cancers": ["bladder", "liver"], "freq": 0.01, "driver": True,
+     "desc": "Helical domain mutation near E545K. Activates downstream AKT signaling."},
+    {"pos": 726, "ref": "S", "alt": "F", "id": "S726F", "cancers": ["esophageal", "liver"], "freq": 0.008, "driver": True,
+     "desc": "Located between helical and kinase domains. Moderate oncogenic activity."},
+    {"pos": 1049, "ref": "G", "alt": "R", "id": "G1049R", "cancers": ["breast", "ovarian"], "freq": 0.01, "driver": True,
+     "desc": "Near H1047 hotspot. Activating mutation in kinase domain."},
+    {"pos": 866, "ref": "M", "alt": "V", "id": "M866V", "cancers": ["breast"], "freq": 0.003, "driver": False,
+     "desc": "Variant of uncertain significance. Conservative amino acid substitution."},
+]
+
 ALL_GENES = {
     "TP53": {"mutations": TP53_MUTATIONS, "length": 393, "chromosome": "17p13.1",
              "full_name": "Tumor Protein P53", "role": "Tumor suppressor — 'Guardian of the Genome'"},
@@ -102,6 +167,12 @@ ALL_GENES = {
               "full_name": "Breast Cancer Gene 1", "role": "DNA repair via homologous recombination"},
     "BRCA2": {"mutations": BRCA2_MUTATIONS, "length": 3418, "chromosome": "13q13.1",
               "full_name": "Breast Cancer Gene 2", "role": "RAD51-mediated DNA double-strand break repair"},
+    "KRAS": {"mutations": KRAS_MUTATIONS, "length": 189, "chromosome": "12p12.1",
+             "full_name": "KRAS Proto-Oncogene", "role": "GTPase signal transducer — RAS/MAPK pathway"},
+    "BRAF": {"mutations": BRAF_MUTATIONS, "length": 766, "chromosome": "7q34",
+             "full_name": "B-Raf Proto-Oncogene", "role": "Serine/threonine kinase — MAPK/ERK pathway"},
+    "PIK3CA": {"mutations": PIK3CA_MUTATIONS, "length": 1068, "chromosome": "3q26.32",
+               "full_name": "PI3K Catalytic Subunit Alpha", "role": "Lipid kinase — PI3K/AKT/mTOR pathway"},
 }
 
 CANCER_TYPES = ["breast", "colorectal", "ovarian", "lung", "brain", "liver",
@@ -175,7 +246,7 @@ def main():
         print(f"  {g}: {len(d['mutations'])} mutations, {d['length']} aa, chr {d['chromosome']}")
 
     # Generate training data
-    samples, feature_names = generate_training_data(2000)
+    samples, feature_names = generate_training_data(5000)
     training_path = os.path.join(data_dir, "training_data.csv")
 
     with open(training_path, "w", newline="") as f:

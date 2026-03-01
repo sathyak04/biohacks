@@ -4,7 +4,7 @@ export default function Navbar() {
   return (
     <nav style={{
       display: "flex", alignItems: "center", justifyContent: "space-between",
-      padding: "14px 20px", maxWidth: "1500px", margin: "0 auto 16px",
+      padding: "8px 16px", maxWidth: "1500px", margin: "0 auto 6px",
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
         <div style={{

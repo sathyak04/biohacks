@@ -4,6 +4,7 @@ import GeneSelector from "./components/GeneSelector";
 import DNAHelix from "./components/DNAHelix";
 import MutationPanel from "./components/MutationPanel";
 import PredictionPanel from "./components/PredictionPanel";
+import AIChat from "./components/AIChat";
 
 const globalStyles = `
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -11,24 +12,35 @@ const globalStyles = `
     font-family: 'Inter', system-ui, sans-serif;
     background: #050a18;
     color: #e2e8f0;
-    min-height: 100vh;
-    overflow-x: hidden;
+    height: 100vh;
+    overflow: hidden;
   }
+  #root { height: 100vh; display: flex; flex-direction: column; }
   .app-container {
     max-width: 1500px;
     margin: 0 auto;
-    padding: 0 20px 48px;
+    padding: 0 16px 8px;
+    flex: 1;
+    min-height: 0;
+    width: 100%;
   }
   .main-layout {
     display: grid;
-    grid-template-columns: 280px 1fr 340px;
-    gap: 20px;
-    min-height: calc(100vh - 80px);
+    grid-template-columns: 260px 1fr 300px;
+    gap: 12px;
+    height: 100%;
+  }
+  .left-panels {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
   }
   .right-panels {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 8px;
+    min-height: 0;
+    overflow-y: auto;
   }
   @media (max-width: 1200px) {
     .main-layout { grid-template-columns: 1fr; }
@@ -42,6 +54,8 @@ export default function App() {
   const [activeMutations, setActiveMutations] = useState([]);
   const [prediction, setPrediction] = useState(null);
   const [predicting, setPredicting] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatKey, setChatKey] = useState(0);
 
   useEffect(() => {
     fetch("/api/catalog")
@@ -69,6 +83,8 @@ export default function App() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       setPrediction(data);
+      setChatKey((k) => k + 1);
+      setChatOpen(false);
     } catch (err) {
       alert(err.message);
     } finally {
@@ -85,12 +101,13 @@ export default function App() {
       <div className="app-container">
         <div className="main-layout">
           {/* Left — Gene selector + mutation list */}
-          <div>
+          <div className="left-panels">
             <GeneSelector
               genes={catalog ? Object.keys(catalog) : []}
               selected={selectedGene}
               onSelect={(g) => { setSelectedGene(g); setSelectedMutation(null); }}
               catalog={catalog}
+              activeMutations={activeMutations}
             />
             <MutationPanel
               gene={selectedGene}
@@ -102,84 +119,42 @@ export default function App() {
             />
           </div>
 
-          {/* Center — 3D DNA Helix */}
+          {/* Center — 3D DNA Helix with mutation detail overlay */}
           <DNAHelix
             geneData={geneData}
             geneName={selectedGene}
             activeMutations={activeMutations}
             selectedMutation={selectedMutation}
             onSelectMutation={setSelectedMutation}
+            mutationDetail={selectedMutation && geneData
+              ? { mutation: geneData.mutations.find((m) => m.id === selectedMutation), gene: selectedGene }
+              : null
+            }
           />
 
-          {/* Right — Mutation detail + Prediction */}
+          {/* Right — Prediction */}
           <div className="right-panels">
-            {selectedMutation && geneData && (
-              <MutationDetail
-                mutation={geneData.mutations.find((m) => m.id === selectedMutation)}
-                gene={selectedGene}
-              />
-            )}
             <PredictionPanel
               activeMutations={activeMutations}
               prediction={prediction}
               predicting={predicting}
               onPredict={handlePredict}
-              onClear={() => { setActiveMutations([]); setPrediction(null); }}
+              onClear={() => { setActiveMutations([]); setPrediction(null); setChatOpen(false); setChatKey((k) => k + 1); }}
+              onAskAI={() => setChatOpen(true)}
             />
           </div>
         </div>
       </div>
+
+      {/* Floating draggable AI Chat panel */}
+      <AIChat
+        key={chatKey}
+        prediction={prediction}
+        activeMutations={activeMutations}
+        isOpen={chatOpen}
+        onClose={() => setChatOpen(false)}
+      />
     </>
   );
 }
 
-function MutationDetail({ mutation, gene }) {
-  if (!mutation) return null;
-
-  const styles = {
-    card: {
-      background: "rgba(15,23,42,0.9)",
-      borderRadius: "12px",
-      padding: "20px",
-      border: "1px solid #1e293b",
-    },
-    title: { fontSize: "16px", fontWeight: "700", marginBottom: "4px", color: "#f0abfc" },
-    subtitle: { fontSize: "12px", color: "#64748b", marginBottom: "12px" },
-    desc: { fontSize: "13px", color: "#94a3b8", lineHeight: "1.5", marginBottom: "12px" },
-    tag: {
-      display: "inline-block",
-      padding: "3px 8px",
-      borderRadius: "4px",
-      fontSize: "11px",
-      fontWeight: "600",
-      marginRight: "4px",
-      marginBottom: "4px",
-    },
-    driverTag: {
-      background: "rgba(239,68,68,0.15)",
-      color: "#f87171",
-    },
-    cancerTag: {
-      background: "rgba(139,92,246,0.15)",
-      color: "#a78bfa",
-    },
-    stat: { fontSize: "12px", color: "#64748b", marginTop: "8px" },
-  };
-
-  return (
-    <div style={styles.card}>
-      <div style={styles.title}>{gene} {mutation.id}</div>
-      <div style={styles.subtitle}>
-        Position {mutation.pos} | {mutation.ref} → {mutation.alt}
-      </div>
-      <div style={styles.desc}>{mutation.desc}</div>
-      <div>
-        {mutation.driver && <span style={{ ...styles.tag, ...styles.driverTag }}>Driver Mutation</span>}
-        {mutation.cancers.map((c) => (
-          <span key={c} style={{ ...styles.tag, ...styles.cancerTag }}>{c}</span>
-        ))}
-      </div>
-      <div style={styles.stat}>Frequency: {(mutation.freq * 100).toFixed(1)}% of {gene} mutations</div>
-    </div>
-  );
-}

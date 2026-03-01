@@ -6,15 +6,15 @@ const CANCER_COLORS = {
   skin: "#fb923c", esophageal: "#94a3b8", prostate: "#38bdf8",
 };
 
-export default function PredictionPanel({ activeMutations, prediction, predicting, onPredict, onClear }) {
+export default function PredictionPanel({ activeMutations, prediction, predicting, onPredict, onClear, onAskAI }) {
   return (
     <div style={{
-      background: "rgba(15,23,42,0.9)", borderRadius: "12px", padding: "20px",
-      border: "1px solid #1e293b", flex: 1,
+      background: "rgba(15,23,42,0.9)", borderRadius: "10px", padding: "12px",
+      border: "1px solid #1e293b",
     }}>
-      <div style={{ fontSize: "14px", fontWeight: "700", marginBottom: "4px" }}>Cancer Type Predictor</div>
-      <div style={{ fontSize: "11px", color: "#64748b", marginBottom: "16px" }}>
-        Select mutations on the left, then predict which cancer type they indicate
+      <div style={{ fontSize: "13px", fontWeight: "700", marginBottom: "2px" }}>Cancer Type Predictor</div>
+      <div style={{ fontSize: "10px", color: "#64748b", marginBottom: "8px" }}>
+        Select mutations across any gene — they combine into one profile for prediction
       </div>
 
       {/* Active mutations */}
@@ -39,7 +39,7 @@ export default function PredictionPanel({ activeMutations, prediction, predictin
       </div>
 
       {/* Buttons */}
-      <div style={{ display: "flex", gap: "8px", marginBottom: "16px" }}>
+      <div style={{ display: "flex", gap: "6px", marginBottom: "8px" }}>
         <button
           onClick={onPredict}
           disabled={predicting || activeMutations.length === 0}
@@ -124,6 +124,25 @@ export default function PredictionPanel({ activeMutations, prediction, predictin
           }}>
             Model accuracy: {(prediction.model_accuracy * 100).toFixed(1)}%
           </div>
+
+          {/* Ask AI button */}
+          <button
+            onClick={onAskAI}
+            style={{
+              width: "100%", marginTop: "12px", padding: "10px", borderRadius: "8px",
+              border: "1px solid rgba(139,92,246,0.3)", cursor: "pointer",
+              background: "rgba(139,92,246,0.1)",
+              color: "#c4b5fd", fontSize: "12px", fontWeight: "700",
+              display: "flex", alignItems: "center", justifyContent: "center", gap: "6px",
+            }}
+            title="Ask AI"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 18h6" /><path d="M10 22h4" />
+              <path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1h-6a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z" />
+            </svg>
+            Ask AI about results
+          </button>
         </div>
       )}
     </div>
