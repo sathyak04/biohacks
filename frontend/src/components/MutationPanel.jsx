@@ -16,7 +16,7 @@ export default function MutationPanel({ gene, geneData, activeMutations, onToggl
   return (
     <div style={{
       background: "rgba(15,23,42,0.9)", borderRadius: "10px", padding: "10px",
-      border: "1px solid #1e293b", flex: 1, minHeight: 0, overflowY: "auto",
+      border: "1px solid #1e293b", flex: "0 1 auto", minHeight: 0, overflowY: "auto",
     }}>
       <div style={{ fontSize: "11px", fontWeight: "600", color: "#64748b", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "4px" }}>
         {gene} Mutations
