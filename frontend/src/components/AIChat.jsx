@@ -118,8 +118,12 @@ export default function AIChat({ prediction, activeMutations, isOpen, onClose })
           width: "20px", height: "20px", borderRadius: "6px",
           background: "linear-gradient(135deg, #8b5cf6, #06b6d4)",
           display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: "9px", fontWeight: "800", color: "#fff",
-        }}>AI</div>
+        }}>
+          <svg width="12" height="14" viewBox="0 0 22 26" fill="none">
+            <path d="M5 1C5 1 17 5 17 7C17 9 5 11 5 13C5 15 17 17 17 19C17 21 5 23 5 25" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
+            <path d="M17 1C17 1 5 5 5 7C5 9 17 11 17 13C17 15 5 17 5 19C5 21 17 23 17 25" stroke="rgba(255,255,255,0.5)" strokeWidth="2.5" strokeLinecap="round" />
+          </svg>
+        </div>
         <span style={{ fontSize: "12px", fontWeight: "700" }}>MutationMap AI</span>
         <span style={{ fontSize: "9px", color: "#475569", marginLeft: "auto", marginRight: "8px" }}>Powered by Groq</span>
         <button

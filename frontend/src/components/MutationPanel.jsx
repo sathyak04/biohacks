@@ -1,6 +1,10 @@
 import React from "react";
 
-const GENE_COLORS = { TP53: "#f87171", BRCA1: "#a78bfa", BRCA2: "#38bdf8" };
+const GENE_COLORS = {
+  TP53: "#f87171", BRCA1: "#a78bfa", BRCA2: "#38bdf8",
+  KRAS: "#f59e0b", BRAF: "#22c55e", PIK3CA: "#ec4899",
+  EGFR: "#fb923c", PTEN: "#2dd4bf",
+};
 
 export default function MutationPanel({ gene, geneData, activeMutations, onToggle, onSelect, selectedMutation }) {
   if (!geneData) {
@@ -21,7 +25,22 @@ export default function MutationPanel({ gene, geneData, activeMutations, onToggl
       <div style={{ fontSize: "11px", fontWeight: "600", color: "#64748b", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "4px" }}>
         {gene} Mutations
       </div>
-      <div style={{ fontSize: "10px", color: "#475569", marginBottom: "12px" }}>{geneData.role}</div>
+      <div style={{ fontSize: "10px", color: "#475569", marginBottom: "8px" }}>{geneData.role}</div>
+
+      {/* Column header */}
+      <div style={{
+        display: "flex", alignItems: "center", gap: "8px",
+        padding: "0 10px 4px", marginBottom: "4px",
+        borderBottom: "1px solid #1e293b",
+      }}>
+        <div style={{ width: "18px" }} />
+        <div style={{ flex: 1, fontSize: "9px", fontWeight: "600", color: "#475569", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+          Mutation
+        </div>
+        <div style={{ width: "40px", fontSize: "9px", fontWeight: "600", color: "#475569", textTransform: "uppercase", letterSpacing: "0.5px", textAlign: "center" }}>
+          Freq
+        </div>
+      </div>
 
       {geneData.mutations.map((mut) => {
         const key = `${gene}_${mut.id}`;

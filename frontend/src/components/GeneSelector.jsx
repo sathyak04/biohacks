@@ -7,6 +7,8 @@ const GENE_COLORS = {
   KRAS: "#f59e0b",
   BRAF: "#22c55e",
   PIK3CA: "#ec4899",
+  EGFR: "#fb923c",
+  PTEN: "#2dd4bf",
 };
 
 export default function GeneSelector({ genes, selected, onSelect, catalog, activeMutations }) {
@@ -26,7 +28,7 @@ export default function GeneSelector({ genes, selected, onSelect, catalog, activ
             Select Gene
           </div>
           <div style={{ fontSize: "9px", color: "#334155" }}>
-            6 clinically significant cancer genes from COSMIC
+            8 clinically significant cancer genes from COSMIC
           </div>
         </div>
         <div style={{ color: "#64748b", fontSize: "12px", marginLeft: "10px" }}>

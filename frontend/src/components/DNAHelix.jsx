@@ -10,6 +10,8 @@ const GENE_COLORS = {
   KRAS: "#f59e0b",
   BRAF: "#22c55e",
   PIK3CA: "#ec4899",
+  EGFR: "#fb923c",
+  PTEN: "#2dd4bf",
 };
 
 // Fixed helix parameters so all genes look the same
@@ -59,10 +61,11 @@ function buildHelixData(geneData, geneName) {
     const dupIndex = positionCounts[posKey];
     positionCounts[posKey]++;
 
-    const t = mut.pos / totalLength;
+    const t = 0.05 + (mut.pos / totalLength) * 0.9;
     const idx = Math.floor(t * TOTAL_POINTS);
     const angle = (idx / TOTAL_POINTS) * HELIX_TURNS * Math.PI * 2;
-    const y = (idx / TOTAL_POINTS - 0.5) * HELIX_HEIGHT + dupIndex * 0.6;
+    const baseY = (idx / TOTAL_POINTS - 0.5) * HELIX_HEIGHT;
+    const y = baseY + dupIndex * 0.6;
 
     return {
       position: new THREE.Vector3(
@@ -72,7 +75,7 @@ function buildHelixData(geneData, geneName) {
       ),
       helixPos: new THREE.Vector3(
         Math.cos(angle) * HELIX_RADIUS,
-        y,
+        baseY,
         Math.sin(angle) * HELIX_RADIUS
       ),
       mutation: mut,
@@ -180,7 +183,7 @@ function HelixModel({ geneData, geneName, activeMutations, selectedMutation, onS
           ? "#ec4899"
           : isDriver
           ? "#f59e0b"
-          : "#475569";
+          : "#94a3b8";
 
         const scale = isSelected ? 1.8 : isHovered ? 1.4 : isActive ? 1.2 : 0.8;
 
@@ -365,7 +368,7 @@ export default function DNAHelix({ geneData, geneName, activeMutations, selected
       }}>
         {[
           { color: "#f59e0b", label: "Driver mutation" },
-          { color: "#475569", label: "Passenger" },
+          { color: "#94a3b8", label: "Passenger" },
           { color: "#ec4899", label: "Selected" },
         ].map(({ color, label }) => (
           <div key={label} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
@@ -376,41 +379,52 @@ export default function DNAHelix({ geneData, geneName, activeMutations, selected
       </div>
 
       {/* Mutation detail overlay — right side of the helix */}
-      {mutationDetail && mutationDetail.mutation && (
-        <div style={{
-          position: "absolute", top: "12px", right: "12px", width: "220px",
-          marginTop: "60px",
-          background: "rgba(5,10,24,0.9)", borderRadius: "10px", padding: "12px",
-          border: "1px solid #1e293b", backdropFilter: "blur(8px)",
-        }}>
-          <div style={{ fontSize: "14px", fontWeight: "700", color: "#f0abfc", marginBottom: "2px" }}>
-            {mutationDetail.gene} {mutationDetail.mutation.id}
+      <div style={{
+        position: "absolute", top: "12px", right: "12px", width: "220px",
+        marginTop: "60px",
+        background: "rgba(5,10,24,0.9)", borderRadius: "10px", padding: "12px",
+        border: "1px solid #1e293b", backdropFilter: "blur(8px)",
+      }}>
+        {mutationDetail && mutationDetail.mutation ? (
+          <>
+            <div style={{ fontSize: "14px", fontWeight: "700", color: "#f0abfc", marginBottom: "2px" }}>
+              {mutationDetail.gene} {mutationDetail.mutation.id}
+            </div>
+            <div style={{ fontSize: "10px", color: "#64748b", marginBottom: "8px" }}>
+              Position {mutationDetail.mutation.pos} | {mutationDetail.mutation.ref} → {mutationDetail.mutation.alt}
+            </div>
+            <div style={{ fontSize: "11px", color: "#94a3b8", lineHeight: "1.5", marginBottom: "8px" }}>
+              {mutationDetail.mutation.desc}
+            </div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "3px", marginBottom: "6px" }}>
+              {mutationDetail.mutation.driver && (
+                <span style={{
+                  padding: "2px 6px", borderRadius: "3px", fontSize: "9px", fontWeight: "600",
+                  background: "rgba(239,68,68,0.15)", color: "#f87171",
+                }}>Driver Mutation</span>
+              )}
+              {mutationDetail.mutation.cancers.map((c) => (
+                <span key={c} style={{
+                  padding: "2px 6px", borderRadius: "3px", fontSize: "9px", fontWeight: "600",
+                  background: "rgba(139,92,246,0.15)", color: "#a78bfa",
+                }}>{c}</span>
+              ))}
+            </div>
+            <div style={{ fontSize: "9px", color: "#475569" }}>
+              Frequency: {(mutationDetail.mutation.freq * 100).toFixed(1)}% of {mutationDetail.gene} mutations
+            </div>
+          </>
+        ) : (
+          <div style={{ textAlign: "center", padding: "8px 0" }}>
+            <div style={{ fontSize: "12px", fontWeight: "700", color: "#475569", marginBottom: "4px" }}>
+              Mutation Details
+            </div>
+            <div style={{ fontSize: "10px", color: "#334155", lineHeight: "1.5" }}>
+              Click a mutation on the helix or select one from the left panel to view its details
+            </div>
           </div>
-          <div style={{ fontSize: "10px", color: "#64748b", marginBottom: "8px" }}>
-            Position {mutationDetail.mutation.pos} | {mutationDetail.mutation.ref} → {mutationDetail.mutation.alt}
-          </div>
-          <div style={{ fontSize: "11px", color: "#94a3b8", lineHeight: "1.5", marginBottom: "8px" }}>
-            {mutationDetail.mutation.desc}
-          </div>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "3px", marginBottom: "6px" }}>
-            {mutationDetail.mutation.driver && (
-              <span style={{
-                padding: "2px 6px", borderRadius: "3px", fontSize: "9px", fontWeight: "600",
-                background: "rgba(239,68,68,0.15)", color: "#f87171",
-              }}>Driver Mutation</span>
-            )}
-            {mutationDetail.mutation.cancers.map((c) => (
-              <span key={c} style={{
-                padding: "2px 6px", borderRadius: "3px", fontSize: "9px", fontWeight: "600",
-                background: "rgba(139,92,246,0.15)", color: "#a78bfa",
-              }}>{c}</span>
-            ))}
-          </div>
-          <div style={{ fontSize: "9px", color: "#475569" }}>
-            Frequency: {(mutationDetail.mutation.freq * 100).toFixed(1)}% of {mutationDetail.gene} mutations
-          </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Instructions */}
       <div style={{
