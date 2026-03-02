@@ -101,7 +101,7 @@ export default function AIChat({ prediction, activeMutations, isOpen, onClose })
         border: "1px solid #1e293b",
         display: "flex",
         flexDirection: "column",
-        zIndex: 1000,
+        zIndex: 9999,
         boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
         backdropFilter: "blur(12px)",
       }}

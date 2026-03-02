@@ -393,7 +393,7 @@ export default function DNAHelix({ geneData, geneName, activeMutations, selected
         position: "absolute", top: "12px", right: "12px", width: "220px",
         marginTop: "60px",
         background: "rgba(5,10,24,0.9)", borderRadius: "10px", padding: "12px",
-        border: "1px solid #1e293b", backdropFilter: "blur(8px)",
+        border: "1px solid #1e293b",
       }}>
         {mutationDetail && mutationDetail.mutation ? (
           <>

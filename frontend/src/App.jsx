@@ -84,7 +84,6 @@ export default function App() {
       if (!res.ok) throw new Error(data.error);
       setPrediction(data);
       setChatKey((k) => k + 1);
-      setChatOpen(false);
     } catch (err) {
       alert(err.message);
     } finally {
@@ -139,7 +138,7 @@ export default function App() {
               prediction={prediction}
               predicting={predicting}
               onPredict={handlePredict}
-              onClear={() => { setActiveMutations([]); setPrediction(null); setChatOpen(false); setChatKey((k) => k + 1); }}
+              onClear={() => { setActiveMutations([]); setPrediction(null); }}
               onAskAI={() => setChatOpen(true)}
             />
           </div>

@@ -141,7 +141,7 @@ export default function PredictionPanel({ activeMutations, prediction, predictin
               <path d="M9 18h6" /><path d="M10 22h4" />
               <path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1h-6a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z" />
             </svg>
-            Ask AI about results
+            Ask AI
           </button>
         </div>
       )}
