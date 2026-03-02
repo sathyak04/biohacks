@@ -98,15 +98,18 @@ function darkenColor(hex, factor) {
   return `rgb(${Math.round(r * factor)}, ${Math.round(g * factor)}, ${Math.round(b * factor)})`;
 }
 
-// Camera controller: smooth vertical scrolling + auto-focus on selected mutation
-function CameraController({ targetY }) {
+// Camera controller: smooth vertical scrolling + zoom
+function CameraController({ targetY, targetZoom }) {
   const { camera } = useThree();
   const currentY = useRef(0);
+  const currentZoom = useRef(12);
 
   useFrame(() => {
     currentY.current += (targetY - currentY.current) * 0.08;
+    currentZoom.current += (targetZoom - currentZoom.current) * 0.08;
     camera.position.y = currentY.current;
     camera.position.x = 1.5;
+    camera.position.z = currentZoom.current;
     camera.lookAt(1.5, currentY.current, 0);
   });
 
@@ -254,6 +257,7 @@ function HelixModel({ geneData, geneName, activeMutations, selectedMutation, onS
 
 export default function DNAHelix({ geneData, geneName, activeMutations, selectedMutation, onSelectMutation, mutationDetail }) {
   const [scrollY, setScrollY] = useState(0);
+  const [zoom, setZoom] = useState(12);
   const containerRef = useRef(null);
   const dragRotation = useRef(0);
   const isDragging = useRef(false);
@@ -293,7 +297,13 @@ export default function DNAHelix({ geneData, geneName, activeMutations, selected
     const handleWheel = (e) => {
       e.preventDefault();
       e.stopPropagation();
-      setScrollY((prev) => clampScroll(prev - e.deltaY * 0.01));
+      if (e.ctrlKey || e.metaKey) {
+        // Ctrl/Cmd + scroll = zoom
+        setZoom((prev) => Math.max(8, Math.min(20, prev + e.deltaY * 0.02)));
+      } else {
+        // Normal scroll = vertical navigation
+        setScrollY((prev) => clampScroll(prev - e.deltaY * 0.01));
+      }
     };
     el.addEventListener("wheel", handleWheel, { passive: false });
     return () => el.removeEventListener("wheel", handleWheel);
@@ -333,7 +343,7 @@ export default function DNAHelix({ geneData, geneName, activeMutations, selected
         <pointLight position={[-10, -5, 5]} intensity={0.4} color="#8b5cf6" />
         <pointLight position={[5, -10, -5]} intensity={0.3} color="#ec4899" />
 
-        <CameraController targetY={scrollY} />
+        <CameraController targetY={scrollY} targetZoom={zoom} />
 
         <HelixModel
           geneData={geneData}
@@ -348,7 +358,7 @@ export default function DNAHelix({ geneData, geneName, activeMutations, selected
       {/* Gene label overlay */}
       {geneData && (
         <div style={{
-          position: "absolute", bottom: "16px", left: "16px", pointerEvents: "none",
+          position: "absolute", bottom: "32px", right: "16px", textAlign: "right", pointerEvents: "none",
         }}>
           <div style={{
             fontSize: "18px", fontWeight: "800",
@@ -428,10 +438,11 @@ export default function DNAHelix({ geneData, geneName, activeMutations, selected
 
       {/* Instructions */}
       <div style={{
-        position: "absolute", bottom: "12px", right: "12px", pointerEvents: "none",
-        fontSize: "10px", color: "#334155",
+        position: "absolute", bottom: "8px", right: "16px", textAlign: "right",
+        pointerEvents: "none",
+        fontSize: "9px", color: "#334155",
       }}>
-        Drag to spin | Scroll to navigate | Click mutations to inspect
+        Drag · Scroll · Zoom · Click to inspect
       </div>
     </div>
   );

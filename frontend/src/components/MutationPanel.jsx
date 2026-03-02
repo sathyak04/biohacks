@@ -25,7 +25,19 @@ export default function MutationPanel({ gene, geneData, activeMutations, onToggl
       <div style={{ fontSize: "11px", fontWeight: "600", color: "#64748b", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "4px" }}>
         {gene} Mutations
       </div>
-      <div style={{ fontSize: "10px", color: "#475569", marginBottom: "8px" }}>{geneData.role}</div>
+      <div style={{ fontSize: "10px", color: "#475569", marginBottom: "4px" }}>{geneData.role}</div>
+      <div style={{ fontSize: "9px", color: "#475569", marginBottom: "4px" }}>
+        <span style={{ color: "#64748b", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.5px" }}>Mutation</span> — Amino acid change caused by the DNA variant
+      </div>
+      <div style={{ fontSize: "9px", color: "#475569", marginBottom: "4px" }}>
+        <span style={{ color: "#64748b", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.5px" }}>Freq</span> — Relative mutation frequency among {gene} mutations in cancer databases
+      </div>
+      <div style={{ fontSize: "9px", color: "#475569", marginBottom: "4px" }}>
+        <span style={{ fontSize: "9px", padding: "1px 5px", borderRadius: "3px", background: "rgba(239,68,68,0.15)", color: "#f87171", fontWeight: "600" }}>DRIVER</span> — Actively drives cancer growth by disrupting key cell functions
+      </div>
+      <div style={{ fontSize: "9px", color: "#475569", marginBottom: "8px" }}>
+        <span style={{ fontSize: "9px", padding: "1px 5px", borderRadius: "3px", background: "rgba(148,163,184,0.15)", color: "#94a3b8", fontWeight: "600" }}>PASSENGER</span> — Co-occurs with drivers but does not directly cause cancer
+      </div>
 
       {/* Column header */}
       <div style={{
@@ -78,11 +90,16 @@ export default function MutationPanel({ gene, geneData, activeMutations, onToggl
                 <span style={{ fontSize: "12px", fontWeight: "600", color: isActive ? color : "#94a3b8" }}>
                   {mut.id}
                 </span>
-                {mut.driver && (
+                {mut.driver ? (
                   <span style={{
                     fontSize: "9px", padding: "1px 5px", borderRadius: "3px",
                     background: "rgba(239,68,68,0.15)", color: "#f87171",
                   }}>DRIVER</span>
+                ) : (
+                  <span style={{
+                    fontSize: "9px", padding: "1px 5px", borderRadius: "3px",
+                    background: "rgba(148,163,184,0.15)", color: "#94a3b8",
+                  }}>PASSENGER</span>
                 )}
               </div>
               <div style={{ fontSize: "10px", color: "#475569" }}>
@@ -105,6 +122,7 @@ export default function MutationPanel({ gene, geneData, activeMutations, onToggl
           </div>
         );
       })}
+
     </div>
   );
 }
