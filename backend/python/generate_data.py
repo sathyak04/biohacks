@@ -1,7 +1,7 @@
 """
 Generate a curated cancer mutation dataset based on real COSMIC mutation patterns.
 
-Genes: TP53, BRCA1, BRCA2, KRAS, BRAF, PIK3CA
+Genes: TP53, BRCA1, BRCA2, KRAS, BRAF, PIK3CA, EGFR, PTEN
 Each mutation has: gene, position, ref_aa, alt_aa, mutation_id, cancer_types, frequency, is_driver
 
 Also generates a training dataset for the cancer-type classifier:
@@ -19,7 +19,7 @@ import csv
 # ============================================================
 
 TP53_MUTATIONS = [
-    {"pos": 175, "ref": "R", "alt": "H", "id": "R175H", "cancers": ["breast", "colorectal", "ovarian", "lung"], "freq": 0.06, "driver": True,
+    {"pos": 175, "ref": "R", "alt": "H", "id": "R175H", "cancers": ["breast", "colorectal", "lung", "ovarian"], "freq": 0.06, "driver": True,
      "desc": "Most common TP53 hotspot. Disrupts DNA-binding domain. Found in Li-Fraumeni syndrome."},
     {"pos": 248, "ref": "R", "alt": "W", "id": "R248W", "cancers": ["colorectal", "breast", "brain", "lung"], "freq": 0.05, "driver": True,
      "desc": "Contact mutation — directly disrupts DNA contact. Gain-of-function properties."},
@@ -56,15 +56,15 @@ BRCA1_MUTATIONS = [
      "desc": "Ashkenazi Jewish founder mutation. Frameshift causing truncation. High penetrance."},
     {"pos": 1794, "ref": "C", "alt": "-", "id": "5382insC", "cancers": ["breast", "ovarian"], "freq": 0.05, "driver": True,
      "desc": "Ashkenazi/Eastern European founder mutation. Frameshift at BRCT domain."},
-    {"pos": 68, "ref": "C", "alt": "G", "id": "C68G", "cancers": ["breast", "ovarian"], "freq": 0.02, "driver": True,
+    {"pos": 68, "ref": "C", "alt": "G", "id": "C68G", "cancers": ["breast"], "freq": 0.02, "driver": True,
      "desc": "RING domain mutation. Disrupts BRCA1-BARD1 interaction critical for DNA repair."},
     {"pos": 1775, "ref": "M", "alt": "R", "id": "M1775R", "cancers": ["breast"], "freq": 0.01, "driver": True,
      "desc": "BRCT domain mutation. Impairs phospho-protein binding and DNA damage response."},
-    {"pos": 1685, "ref": "A", "alt": "T", "id": "A1685T", "cancers": ["breast", "ovarian"], "freq": 0.01, "driver": True,
+    {"pos": 1685, "ref": "A", "alt": "T", "id": "A1685T", "cancers": ["breast"], "freq": 0.01, "driver": True,
      "desc": "Near BRCT domain. Affects protein folding and stability."},
     {"pos": 61, "ref": "C", "alt": "G", "id": "C61G", "cancers": ["breast", "ovarian", "pancreatic"], "freq": 0.02, "driver": True,
      "desc": "RING finger domain. Abolishes E3 ubiquitin ligase activity."},
-    {"pos": 1613, "ref": "Q", "alt": "X", "id": "Q1613X", "cancers": ["breast", "ovarian"], "freq": 0.01, "driver": True,
+    {"pos": 1613, "ref": "Q", "alt": "X", "id": "Q1613X", "cancers": ["breast"], "freq": 0.01, "driver": True,
      "desc": "Nonsense mutation causing premature stop codon. Loss of BRCT domains."},
     {"pos": 871, "ref": "E", "alt": "X", "id": "E871X", "cancers": ["breast"], "freq": 0.008, "driver": True,
      "desc": "Truncating mutation. Removes majority of functional domains."},
@@ -75,9 +75,9 @@ BRCA1_MUTATIONS = [
 ]
 
 BRCA2_MUTATIONS = [
-    {"pos": 2058, "ref": "T", "alt": "-", "id": "6174delT", "cancers": ["breast", "ovarian", "prostate", "pancreatic"], "freq": 0.06, "driver": True,
+    {"pos": 2058, "ref": "T", "alt": "-", "id": "6174delT", "cancers": ["breast", "ovarian", "pancreatic"], "freq": 0.06, "driver": True,
      "desc": "Ashkenazi Jewish founder mutation. Frameshift causing truncated protein."},
-    {"pos": 999, "ref": "S", "alt": "-", "id": "999del5", "cancers": ["breast", "ovarian"], "freq": 0.03, "driver": True,
+    {"pos": 999, "ref": "S", "alt": "-", "id": "999del5", "cancers": ["breast"], "freq": 0.03, "driver": True,
      "desc": "Icelandic founder mutation. Five-nucleotide deletion in exon 9."},
     {"pos": 2336, "ref": "T", "alt": "I", "id": "T2336I", "cancers": ["breast", "pancreatic"], "freq": 0.01, "driver": True,
      "desc": "Missense in DNA-binding domain. Impairs RAD51 loading onto ssDNA."},
@@ -160,6 +160,48 @@ PIK3CA_MUTATIONS = [
      "desc": "Variant of uncertain significance. Conservative amino acid substitution."},
 ]
 
+EGFR_MUTATIONS = [
+    {"pos": 858, "ref": "L", "alt": "R", "id": "L858R", "cancers": ["lung"], "freq": 0.12, "driver": True,
+     "desc": "Most common EGFR mutation in lung cancer. Activates kinase domain. Responds to erlotinib/gefitinib."},
+    {"pos": 790, "ref": "T", "alt": "M", "id": "T790M", "cancers": ["lung"], "freq": 0.06, "driver": True,
+     "desc": "Gatekeeper mutation causing resistance to first-gen TKIs. Target of osimertinib."},
+    {"pos": 746, "ref": "E", "alt": "-", "id": "E746del", "cancers": ["lung"], "freq": 0.08, "driver": True,
+     "desc": "Exon 19 deletion. Second most common EGFR mutation. Highly TKI-sensitive."},
+    {"pos": 719, "ref": "G", "alt": "S", "id": "G719S", "cancers": ["lung"], "freq": 0.02, "driver": True,
+     "desc": "Uncommon activating mutation in P-loop. Moderate TKI sensitivity."},
+    {"pos": 861, "ref": "L", "alt": "Q", "id": "L861Q", "cancers": ["lung"], "freq": 0.02, "driver": True,
+     "desc": "Uncommon kinase domain mutation. Responds to afatinib and osimertinib."},
+    {"pos": 768, "ref": "S", "alt": "I", "id": "S768I", "cancers": ["lung"], "freq": 0.01, "driver": True,
+     "desc": "Exon 20 point mutation. Variable drug sensitivity. Often co-occurs with other mutations."},
+    {"pos": 289, "ref": "A", "alt": "V", "id": "A289V", "cancers": ["brain"], "freq": 0.03, "driver": True,
+     "desc": "Extracellular domain mutation. Common in glioblastoma (GBM). Constitutive activation."},
+    {"pos": 598, "ref": "R", "alt": "V", "id": "R108K", "cancers": ["lung", "esophageal"], "freq": 0.01, "driver": True,
+     "desc": "Extracellular domain variant. Found in esophageal squamous cell carcinoma."},
+    {"pos": 1210, "ref": "A", "alt": "V", "id": "A1210V", "cancers": ["lung"], "freq": 0.003, "driver": False,
+     "desc": "C-terminal variant. Uncertain clinical significance."},
+]
+
+PTEN_MUTATIONS = [
+    {"pos": 130, "ref": "R", "alt": "G", "id": "R130G", "cancers": ["prostate", "brain", "breast"], "freq": 0.05, "driver": True,
+     "desc": "Most common PTEN hotspot. Disrupts phosphatase catalytic site. Loss of tumor suppression."},
+    {"pos": 130, "ref": "R", "alt": "Q", "id": "R130Q", "cancers": ["prostate", "brain"], "freq": 0.03, "driver": True,
+     "desc": "Alternative catalytic site mutation. Abolishes lipid phosphatase activity."},
+    {"pos": 173, "ref": "R", "alt": "C", "id": "R173C", "cancers": ["brain", "prostate", "liver"], "freq": 0.03, "driver": True,
+     "desc": "C2 domain mutation. Disrupts membrane binding. Common in glioblastoma."},
+    {"pos": 233, "ref": "C", "alt": "X", "id": "C233X", "cancers": ["prostate", "breast"], "freq": 0.02, "driver": True,
+     "desc": "Nonsense mutation causing premature stop. Complete loss of PTEN function."},
+    {"pos": 136, "ref": "C", "alt": "R", "id": "C136R", "cancers": ["brain", "prostate"], "freq": 0.02, "driver": True,
+     "desc": "Near catalytic site. Disrupts protein stability and phosphatase activity."},
+    {"pos": 234, "ref": "K", "alt": "N", "id": "K234N", "cancers": ["esophageal", "prostate"], "freq": 0.01, "driver": True,
+     "desc": "C2 domain mutation. Impairs membrane localization of PTEN."},
+    {"pos": 42, "ref": "G", "alt": "V", "id": "G42V", "cancers": ["prostate", "bladder"], "freq": 0.01, "driver": True,
+     "desc": "N-terminal phosphatase domain. Reduces catalytic efficiency."},
+    {"pos": 317, "ref": "L", "alt": "R", "id": "L317R", "cancers": ["brain", "skin"], "freq": 0.01, "driver": True,
+     "desc": "C2 domain mutation. Affects PTEN stability and nuclear localization."},
+    {"pos": 335, "ref": "T", "alt": "I", "id": "T335I", "cancers": ["prostate"], "freq": 0.005, "driver": False,
+     "desc": "C-terminal variant. Uncertain significance. Possible effect on protein stability."},
+]
+
 ALL_GENES = {
     "TP53": {"mutations": TP53_MUTATIONS, "length": 393, "chromosome": "17p13.1",
              "full_name": "Tumor Protein P53", "role": "Tumor suppressor — 'Guardian of the Genome'"},
@@ -173,6 +215,10 @@ ALL_GENES = {
              "full_name": "B-Raf Proto-Oncogene", "role": "Serine/threonine kinase — MAPK/ERK pathway"},
     "PIK3CA": {"mutations": PIK3CA_MUTATIONS, "length": 1068, "chromosome": "3q26.32",
                "full_name": "PI3K Catalytic Subunit Alpha", "role": "Lipid kinase — PI3K/AKT/mTOR pathway"},
+    "EGFR": {"mutations": EGFR_MUTATIONS, "length": 1210, "chromosome": "7p11.2",
+             "full_name": "Epidermal Growth Factor Receptor", "role": "Receptor tyrosine kinase — EGFR signaling"},
+    "PTEN": {"mutations": PTEN_MUTATIONS, "length": 403, "chromosome": "10q23.31",
+             "full_name": "Phosphatase and Tensin Homolog", "role": "Tumor suppressor — PI3K/AKT pathway antagonist"},
 }
 
 CANCER_TYPES = ["breast", "colorectal", "ovarian", "lung", "brain", "liver",
@@ -213,11 +259,17 @@ def generate_training_data(num_samples=2000):
         features = []
         for mut in all_driver_muts:
             if cancer in mut["cancers"]:
-                # Higher chance of being present
-                prob = min(0.7, mut["freq"] * 8 + 0.15)
+                # Boost: mutations strongly associated with this cancer
+                # Extra boost if this cancer is the ONLY one listed (exclusive) or first (primary)
+                if len(mut["cancers"]) == 1 and mut["cancers"][0] == cancer:
+                    prob = min(0.9, mut["freq"] * 15 + 0.45)
+                elif mut["cancers"][0] == cancer:
+                    prob = min(0.8, mut["freq"] * 12 + 0.3)
+                else:
+                    prob = min(0.45, mut["freq"] * 4 + 0.1)
             else:
-                # Low background rate
-                prob = mut["freq"] * 0.5
+                # Very low background rate for non-associated mutations
+                prob = mut["freq"] * 0.08
             features.append(1 if random.random() < prob else 0)
 
         # Only keep samples with at least 1 mutation

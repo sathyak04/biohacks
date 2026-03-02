@@ -17,13 +17,18 @@ async function predictRoutes(fastify) {
     const inputJson = JSON.stringify({ mutations });
 
     return new Promise((resolve) => {
-      const proc = spawn("python", [pythonScript], { timeout: 15000 });
+      const proc = spawn("python", [`"${pythonScript}"`], { timeout: 15000, shell: true });
 
       let stdout = "";
       let stderr = "";
 
       proc.stdout.on("data", (data) => { stdout += data.toString(); });
       proc.stderr.on("data", (data) => { stderr += data.toString(); });
+
+      proc.on("error", (err) => {
+        fastify.log.error("Failed to spawn python: " + err.message);
+        resolve(reply.code(500).send({ error: "Failed to start Python", details: err.message }));
+      });
 
       proc.on("close", (code) => {
         if (code !== 0) {

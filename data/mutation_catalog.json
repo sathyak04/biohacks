@@ -13,8 +13,8 @@
         "cancers": [
           "breast",
           "colorectal",
-          "ovarian",
-          "lung"
+          "lung",
+          "ovarian"
         ],
         "freq": 0.06,
         "driver": true,
@@ -251,8 +251,7 @@
         "alt": "G",
         "id": "C68G",
         "cancers": [
-          "breast",
-          "ovarian"
+          "breast"
         ],
         "freq": 0.02,
         "driver": true,
@@ -276,8 +275,7 @@
         "alt": "T",
         "id": "A1685T",
         "cancers": [
-          "breast",
-          "ovarian"
+          "breast"
         ],
         "freq": 0.01,
         "driver": true,
@@ -303,8 +301,7 @@
         "alt": "X",
         "id": "Q1613X",
         "cancers": [
-          "breast",
-          "ovarian"
+          "breast"
         ],
         "freq": 0.01,
         "driver": true,
@@ -362,7 +359,6 @@
         "cancers": [
           "breast",
           "ovarian",
-          "prostate",
           "pancreatic"
         ],
         "freq": 0.06,
@@ -375,8 +371,7 @@
         "alt": "-",
         "id": "999del5",
         "cancers": [
-          "breast",
-          "ovarian"
+          "breast"
         ],
         "freq": 0.03,
         "driver": true,
@@ -858,6 +853,249 @@
         "freq": 0.003,
         "driver": false,
         "desc": "Variant of uncertain significance. Conservative amino acid substitution."
+      }
+    ]
+  },
+  "EGFR": {
+    "length": 1210,
+    "chromosome": "7p11.2",
+    "full_name": "Epidermal Growth Factor Receptor",
+    "role": "Receptor tyrosine kinase \u2014 EGFR signaling",
+    "mutations": [
+      {
+        "pos": 858,
+        "ref": "L",
+        "alt": "R",
+        "id": "L858R",
+        "cancers": [
+          "lung"
+        ],
+        "freq": 0.12,
+        "driver": true,
+        "desc": "Most common EGFR mutation in lung cancer. Activates kinase domain. Responds to erlotinib/gefitinib."
+      },
+      {
+        "pos": 790,
+        "ref": "T",
+        "alt": "M",
+        "id": "T790M",
+        "cancers": [
+          "lung"
+        ],
+        "freq": 0.06,
+        "driver": true,
+        "desc": "Gatekeeper mutation causing resistance to first-gen TKIs. Target of osimertinib."
+      },
+      {
+        "pos": 746,
+        "ref": "E",
+        "alt": "-",
+        "id": "E746del",
+        "cancers": [
+          "lung"
+        ],
+        "freq": 0.08,
+        "driver": true,
+        "desc": "Exon 19 deletion. Second most common EGFR mutation. Highly TKI-sensitive."
+      },
+      {
+        "pos": 719,
+        "ref": "G",
+        "alt": "S",
+        "id": "G719S",
+        "cancers": [
+          "lung"
+        ],
+        "freq": 0.02,
+        "driver": true,
+        "desc": "Uncommon activating mutation in P-loop. Moderate TKI sensitivity."
+      },
+      {
+        "pos": 861,
+        "ref": "L",
+        "alt": "Q",
+        "id": "L861Q",
+        "cancers": [
+          "lung"
+        ],
+        "freq": 0.02,
+        "driver": true,
+        "desc": "Uncommon kinase domain mutation. Responds to afatinib and osimertinib."
+      },
+      {
+        "pos": 768,
+        "ref": "S",
+        "alt": "I",
+        "id": "S768I",
+        "cancers": [
+          "lung"
+        ],
+        "freq": 0.01,
+        "driver": true,
+        "desc": "Exon 20 point mutation. Variable drug sensitivity. Often co-occurs with other mutations."
+      },
+      {
+        "pos": 289,
+        "ref": "A",
+        "alt": "V",
+        "id": "A289V",
+        "cancers": [
+          "brain"
+        ],
+        "freq": 0.03,
+        "driver": true,
+        "desc": "Extracellular domain mutation. Common in glioblastoma (GBM). Constitutive activation."
+      },
+      {
+        "pos": 598,
+        "ref": "R",
+        "alt": "V",
+        "id": "R108K",
+        "cancers": [
+          "lung",
+          "esophageal"
+        ],
+        "freq": 0.01,
+        "driver": true,
+        "desc": "Extracellular domain variant. Found in esophageal squamous cell carcinoma."
+      },
+      {
+        "pos": 1210,
+        "ref": "A",
+        "alt": "V",
+        "id": "A1210V",
+        "cancers": [
+          "lung"
+        ],
+        "freq": 0.003,
+        "driver": false,
+        "desc": "C-terminal variant. Uncertain clinical significance."
+      }
+    ]
+  },
+  "PTEN": {
+    "length": 403,
+    "chromosome": "10q23.31",
+    "full_name": "Phosphatase and Tensin Homolog",
+    "role": "Tumor suppressor \u2014 PI3K/AKT pathway antagonist",
+    "mutations": [
+      {
+        "pos": 130,
+        "ref": "R",
+        "alt": "G",
+        "id": "R130G",
+        "cancers": [
+          "prostate",
+          "brain",
+          "breast"
+        ],
+        "freq": 0.05,
+        "driver": true,
+        "desc": "Most common PTEN hotspot. Disrupts phosphatase catalytic site. Loss of tumor suppression."
+      },
+      {
+        "pos": 130,
+        "ref": "R",
+        "alt": "Q",
+        "id": "R130Q",
+        "cancers": [
+          "prostate",
+          "brain"
+        ],
+        "freq": 0.03,
+        "driver": true,
+        "desc": "Alternative catalytic site mutation. Abolishes lipid phosphatase activity."
+      },
+      {
+        "pos": 173,
+        "ref": "R",
+        "alt": "C",
+        "id": "R173C",
+        "cancers": [
+          "brain",
+          "prostate",
+          "liver"
+        ],
+        "freq": 0.03,
+        "driver": true,
+        "desc": "C2 domain mutation. Disrupts membrane binding. Common in glioblastoma."
+      },
+      {
+        "pos": 233,
+        "ref": "C",
+        "alt": "X",
+        "id": "C233X",
+        "cancers": [
+          "prostate",
+          "breast"
+        ],
+        "freq": 0.02,
+        "driver": true,
+        "desc": "Nonsense mutation causing premature stop. Complete loss of PTEN function."
+      },
+      {
+        "pos": 136,
+        "ref": "C",
+        "alt": "R",
+        "id": "C136R",
+        "cancers": [
+          "brain",
+          "prostate"
+        ],
+        "freq": 0.02,
+        "driver": true,
+        "desc": "Near catalytic site. Disrupts protein stability and phosphatase activity."
+      },
+      {
+        "pos": 234,
+        "ref": "K",
+        "alt": "N",
+        "id": "K234N",
+        "cancers": [
+          "esophageal",
+          "prostate"
+        ],
+        "freq": 0.01,
+        "driver": true,
+        "desc": "C2 domain mutation. Impairs membrane localization of PTEN."
+      },
+      {
+        "pos": 42,
+        "ref": "G",
+        "alt": "V",
+        "id": "G42V",
+        "cancers": [
+          "prostate",
+          "bladder"
+        ],
+        "freq": 0.01,
+        "driver": true,
+        "desc": "N-terminal phosphatase domain. Reduces catalytic efficiency."
+      },
+      {
+        "pos": 317,
+        "ref": "L",
+        "alt": "R",
+        "id": "L317R",
+        "cancers": [
+          "brain",
+          "skin"
+        ],
+        "freq": 0.01,
+        "driver": true,
+        "desc": "C2 domain mutation. Affects PTEN stability and nuclear localization."
+      },
+      {
+        "pos": 335,
+        "ref": "T",
+        "alt": "I",
+        "id": "T335I",
+        "cancers": [
+          "prostate"
+        ],
+        "freq": 0.005,
+        "driver": false,
+        "desc": "C-terminal variant. Uncertain significance. Possible effect on protein stability."
       }
     ]
   }
