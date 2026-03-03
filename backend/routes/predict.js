@@ -1,12 +1,56 @@
-const { spawn } = require("child_process");
 const path = require("path");
 const fs = require("fs");
 
+let rfModel = null;
+let metadata = null;
+
+function loadModel() {
+  if (rfModel && metadata) return;
+  const modelPath = path.join(__dirname, "..", "model", "rf_model.json");
+  const metaPath = path.join(__dirname, "..", "model", "metadata.json");
+
+  if (fs.existsSync(modelPath) && fs.existsSync(metaPath)) {
+    rfModel = JSON.parse(fs.readFileSync(modelPath, "utf-8"));
+    metadata = JSON.parse(fs.readFileSync(metaPath, "utf-8"));
+  }
+}
+
+function predictProbabilities(featureVector) {
+  const nClasses = rfModel.n_classes;
+  const nTrees = rfModel.trees.length;
+
+  let classProbs = new Array(nClasses).fill(0);
+
+  for (const tree of rfModel.trees) {
+    let node = 0;
+    while (tree.children_left[node] !== -1) {
+      const f = tree.feature[node];
+      const t = tree.threshold[node];
+      if (featureVector[f] <= t) {
+        node = tree.children_left[node];
+      } else {
+        node = tree.children_right[node];
+      }
+    }
+
+    // In scikit-learn, values are shape (n_nodes, 1, n_classes)
+    const values = tree.value[node][0];
+    const sum = values.reduce((a, b) => a + b, 0);
+    for (let c = 0; c < nClasses; c++) {
+      classProbs[c] += values[c] / sum;
+    }
+  }
+
+  // Average across all trees
+  for (let c = 0; c < nClasses; c++) {
+    classProbs[c] /= nTrees;
+  }
+  return classProbs;
+}
+
 async function predictRoutes(fastify) {
-  const pythonScript = path.join(__dirname, "..", "python", "predict.py");
   const metadataPath = path.join(__dirname, "..", "model", "metadata.json");
 
-  // POST /api/predict — Mutation list -> cancer type prediction
   fastify.post("/predict", async (request, reply) => {
     const { mutations } = request.body;
 
@@ -14,42 +58,40 @@ async function predictRoutes(fastify) {
       return reply.code(400).send({ error: "Provide a non-empty mutations array." });
     }
 
-    const inputJson = JSON.stringify({ mutations });
+    try {
+      loadModel();
+      if (!rfModel || !metadata) {
+        return reply.code(500).send({ error: "Model not found. Please train and export the model first." });
+      }
 
-    return new Promise((resolve) => {
-      const proc = spawn("python", [`"${pythonScript}"`], { timeout: 15000, shell: true });
+      const featureVector = metadata.features.map(f => mutations.includes(f) ? 1 : 0);
+      const probabilities = predictProbabilities(featureVector);
 
-      let stdout = "";
-      let stderr = "";
+      let predictions = [];
+      const cancerTypes = metadata.cancer_types;
+      for (let i = 0; i < cancerTypes.length; i++) {
+        predictions.push({
+          cancer_type: cancerTypes[i],
+          probability: Math.round(probabilities[i] * 1000) / 10
+        });
+      }
+      predictions.sort((a, b) => b.probability - a.probability);
 
-      proc.stdout.on("data", (data) => { stdout += data.toString(); });
-      proc.stderr.on("data", (data) => { stderr += data.toString(); });
+      const top = predictions[0];
 
-      proc.on("error", (err) => {
-        fastify.log.error("Failed to spawn python: " + err.message);
-        resolve(reply.code(500).send({ error: "Failed to start Python", details: err.message }));
-      });
-
-      proc.on("close", (code) => {
-        if (code !== 0) {
-          fastify.log.error(stderr);
-          resolve(reply.code(500).send({ error: "Prediction failed", details: stderr }));
-          return;
-        }
-        try {
-          resolve(JSON.parse(stdout));
-        } catch {
-          resolve(reply.code(500).send({ error: "Failed to parse prediction output" }));
-        }
-      });
-
-      // Send JSON via stdin instead of command-line arg (avoids Windows quoting issues)
-      proc.stdin.write(inputJson);
-      proc.stdin.end();
-    });
+      return {
+        top_prediction: top.cancer_type,
+        top_probability: top.probability,
+        all_predictions: predictions,
+        mutations_analyzed: mutations,
+        model_accuracy: metadata.accuracy
+      };
+    } catch (err) {
+      fastify.log.error(err);
+      return reply.code(500).send({ error: "Prediction failed", details: err.message });
+    }
   });
 
-  // GET /api/model-info
   fastify.get("/model-info", async (request, reply) => {
     if (!fs.existsSync(metadataPath)) {
       return reply.code(404).send({ error: "Model not trained yet." });
